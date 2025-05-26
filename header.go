@@ -1,8 +1,8 @@
-package go_buy365
+package go_coinpay
 
 func getHeaders() map[string]string {
 	return map[string]string{
-		"Content-Type": "multipart/form-data",
+		"Content-Type": "application/x-www-form-urlencoded",
 		"charset":      "utf-8",
 	}
 }

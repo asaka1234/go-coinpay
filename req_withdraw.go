@@ -1,13 +1,13 @@
-package go_buy365
+package go_coinpay
 
 import (
 	"crypto/tls"
 	"encoding/json"
-	"github.com/asaka1234/go-buy365/utils"
+	"github.com/asaka1234/go-coinpay/utils"
 )
 
 // withdraw
-func (cli *Client) Withdraw(req Buy365WithdrawReq) (*Buy365WithdrawResponse, error) {
+func (cli *Client) Withdraw(req CoinPayWithdrawReq) (*CoinPayWithdrawResponse, error) {
 
 	rawURL := cli.WithdrawURL
 
@@ -24,7 +24,7 @@ func (cli *Client) Withdraw(req Buy365WithdrawReq) (*Buy365WithdrawResponse, err
 	params["sign"] = signStr
 
 	//返回值会放到这里
-	var result Buy365WithdrawResponse
+	var result CoinPayWithdrawResponse
 
 	_, err = cli.ryClient.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
 		SetCloseConnection(true).

@@ -1,4 +1,4 @@
-package go_buy365
+package go_coinpay
 
 const (
 	MERCHANT_ID = "502326"                               //商户号

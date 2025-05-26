@@ -1,4 +1,4 @@
-module github.com/asaka1234/go-buy365
+module github.com/asaka1234/go-coinpay
 
 go 1.24.2
 

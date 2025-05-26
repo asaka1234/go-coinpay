@@ -1,16 +1,16 @@
-package go_buy365
+package go_coinpay
 
 import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/asaka1234/go-buy365/utils"
+	"github.com/asaka1234/go-coinpay/utils"
 	"github.com/mitchellh/mapstructure"
 	"time"
 )
 
 // pre-order
-func (cli *Client) Deposit(req Buy365DepositReq) (*Buy365DepositResponse, error) {
+func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, error) {
 
 	rawURL := cli.DepositURL
 
@@ -24,7 +24,7 @@ func (cli *Client) Deposit(req Buy365DepositReq) (*Buy365DepositResponse, error)
 	params["sign"] = signStr
 
 	//返回值会放到这里
-	var result Buy365DepositCommonResponse
+	var result CoinPayDepositCommonResponse
 
 	resp2, err := cli.ryClient.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
 		SetCloseConnection(true).
@@ -49,7 +49,7 @@ func (cli *Client) Deposit(req Buy365DepositReq) (*Buy365DepositResponse, error)
 		}
 
 		//step-2
-		var resp3 Buy365DepositResponse
+		var resp3 CoinPayDepositResponse
 		if err := mapstructure.Decode(data, &resp3); err != nil {
 			return nil, err
 		}
@@ -57,7 +57,7 @@ func (cli *Client) Deposit(req Buy365DepositReq) (*Buy365DepositResponse, error)
 		return &resp3, nil
 	}
 
-	return &Buy365DepositResponse{
+	return &CoinPayDepositResponse{
 		Code:   result.Code,
 		Status: result.Status,
 		Msg:    result.Msg,

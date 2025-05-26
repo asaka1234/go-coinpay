@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// pre-order
+// https://www.coinpayments.net/apidoc-create-transaction
 func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, error) {
 
 	rawURL := cli.DepositURL

@@ -2,131 +2,55 @@ package go_coinpay
 
 // ----------pre order-------------------------
 
+// https://www.coinpayments.net/apidoc-create-transaction
 type CoinPayDepositReq struct {
-	OrderId     string `json:"order_id" mapstructure:"order_id"`           // 订单ID
-	OrderAmount string `json:"order_amount" mapstructure:"order_amount"`   // 订单金额
-	UserId      string `json:"user_id" mapstructure:"user_id"`             // 用户ID
-	OrderIp     string `json:"order_ip" mapstructure:"order_ip"`           // 订单IP
-	PayUserName string `json:"pay_user_name" mapstructure:"pay_user_name"` // 付款人姓名
-	//这个是CoinPay给分配的商户id
-	//SysNo string `json:"sys_no" mapstructure:"sys_no"` // 系统编号
-	//这个让sdk来赋值
-	//OrderTime string `json:"order_time" mapstructure:"order_time"` // 订单时间 格式:yyyy-MM-dd HH:mm:ss
-}
+	// Required fields
+	Cmd        string `json:"cmd" mapstructure:"cmd"`                 // create_transaction - Yes
+	Amount     string `json:"amount" mapstructure:"amount"`           // The amount of the payment in the original currency - Yes
+	Currency1  string `json:"currency1" mapstructure:"currency1"`     // The original currency of the payment - Yes
+	Currency2  string `json:"currency2" mapstructure:"currency2"`     // The currency the buyer will be sending - Yes
+	BuyerEmail string `json:"buyer_email" mapstructure:"buyer_email"` // Buyer's email address - Yes
 
-// 不管是正确/失败的通用字段返回
-type CoinPayDepositCommonResponse struct {
-	Code   int    `json:"code"`   // 111 是正确
-	Status string `json:"status"` //success 是正确
-	Msg    string `json:"msg"`
+	// Optional fields
+	Address    string `json:"address,omitempty" mapstructure:"address,omitempty"`         // Address to send the funds to - No
+	BuyerName  string `json:"buyer_name,omitempty" mapstructure:"buyer_name,omitempty"`   // Buyer's name for reference - No
+	ItemName   string `json:"item_name,omitempty" mapstructure:"item_name,omitempty"`     // Item name for reference - No
+	ItemNumber string `json:"item_number,omitempty" mapstructure:"item_number,omitempty"` // Item number for reference - No
+	Invoice    string `json:"invoice,omitempty" mapstructure:"invoice,omitempty"`         // Custom field for your use - No
+	Custom     string `json:"custom,omitempty" mapstructure:"custom,omitempty"`           // Custom field for your use - No
+	IPNUrl     string `json:"ipn_url,omitempty" mapstructure:"ipn_url,omitempty"`         // URL for IPN callbacks - No
+	SuccessUrl string `json:"success_url,omitempty" mapstructure:"success_url,omitempty"` // URL for successful payment - No
+	CancelUrl  string `json:"cancel_url,omitempty" mapstructure:"cancel_url,omitempty"`   // URL for cancelled payment - No
 }
 
 type CoinPayDepositResponse struct {
-	Code   int                         `json:"code" mapstructure:"code"`     // 111 是正确
-	Status string                      `json:"status" mapstructure:"status"` //success 是正确
-	Msg    string                      `json:"msg" mapstructure:"msg"`
-	Data   *CoinPayDepositResponseData `json:"data" mapstructure:"data"`
+	Error  string                    `json:"error" mapstructure:"error"`
+	Result *CoinPaymentDepositResult `json:"result,omitempty" mapstructure:"result,omitempty"`
 }
 
-type CoinPayDepositResponseData struct {
-	OrderNo string `json:"order_no" mapstructure:"order_no"` // 订单编号
-	SendUrl string `json:"send_url" mapstructure:"send_url"` // 发送URL
-	UserId  string `json:"user_id" mapstructure:"user_id"`   // 用户ID
+type CoinPaymentDepositResult struct {
+	Amount         string `json:"amount" mapstructure:"amount"`
+	Address        string `json:"address" mapstructure:"address"`
+	DestTag        string `json:"dest_tag,omitempty" mapstructure:"dest_tag,omitempty"` // 有些币种需要目标标签
+	TxnID          string `json:"txn_id" mapstructure:"txn_id"`
+	ConfirmsNeeded string `json:"confirms_needed" mapstructure:"confirms_needed"`
+	Timeout        int    `json:"timeout" mapstructure:"timeout"`
+	CheckoutURL    string `json:"checkout_url" mapstructure:"checkout_url"`
+	StatusURL      string `json:"status_url" mapstructure:"status_url"`
+	QRCodeURL      string `json:"qrcode_url" mapstructure:"qrcode_url"`
 }
 
-// ------------------------------------------------------------
-type CoinPayDepositCancelBackReq struct {
-	BillNo     string `json:"bill_no" mapstructure:"bill_no"`         // 唯一订单号，商户下单时传过来的order_id
-	BillStatus int    `json:"bill_status" mapstructure:"bill_status"` // 订单状态：1=订单已取消；2=订单已激活
-	SysNo      string `json:"sys_no" mapstructure:"sys_no"`           // 商户编号
-	Sign       string `json:"sign" mapstructure:"sign"`               // 签名，参照验签规范
-}
+//===========callback===================================
 
-type CoinPayDepositSucceedBackReq struct {
-	BillNo string `json:"bill_no" mapstructure:"bill_no"` // 必须包含订单号
-	Amount string `json:"amount" mapstructure:"amount"`   // 必须是数字字符串
-	SysNo  string `json:"sys_no" mapstructure:"sys_no"`   // 必须包含商户号
-	Sign   string `json:"sign" mapstructure:"sign"`       // 必须包含签名
-}
+// https://www.coinpayments.net/apidoc-get-callback-address
 
-//===========withdraw===================================
+type CoinPayDepositBackReq struct {
+	// Required fields
+	Cmd      string `json:"cmd" mapstructure:"cmd"`           // get_callback_address - Yes
+	Currency string `json:"currency" mapstructure:"currency"` // The currency the buyer will be sending - Yes
 
-type CoinPayWithdrawReq struct {
-	Data []CoinPayWithdrawData `json:"data" mapstructure:"data"` // 申请sys_no唯一标识 610001
-	//这个是CoinPay给分配的商户id ,sdk来赋值
-	//SysNo string `json:"sys_no" mapstructure:"sys_no"` // 申请sys_no唯一标识 610001号
-}
-
-type CoinPayWithdrawData struct {
-	UserName    string `json:"user_name" mapstructure:"user_name"`       // 真实姓名
-	BankCardNo  string `json:"bankcard_no" mapstructure:"bankcard_no"`   // 卡号
-	SerialNo    string `json:"serial_no" mapstructure:"serial_no"`       // 订单号
-	BankAddress string `json:"bank_address" mapstructure:"bank_address"` // 支行地址
-	Amount      string `json:"amount" mapstructure:"amount"`             // 金额
-}
-
-type CoinPayWithdrawResponse struct {
-	Code int    `json:"code"` //200是成功
-	Msg  string `json:"msg"`
-}
-
-type CoinPayWithdrawCancelBackReq struct {
-	BillNo     string `json:"bill_no" mapstructure:"bill_no"`         // 唯一订单号，商户下单时传过来的order_id
-	BillStatus int    `json:"bill_status" mapstructure:"bill_status"` // 订单状态：1=订单已取消；2=订单已激活
-	SysNo      string `json:"sys_no" mapstructure:"sys_no"`           // 商户编号
-	Sign       string `json:"sign" mapstructure:"sign"`               // 签名，参照验签规范
-}
-
-type CoinPayWithdrawSucceedBackReq struct {
-	BillNo string `json:"bill_no" mapstructure:"bill_no"` // 唯一订单号，商户下单时传过来的order_id
-	Amount string `json:"amount" mapstructure:"amount"`   //订单金额
-	SysNo  string `json:"sys_no" mapstructure:"sys_no"`   //商户编号
-	Sign   string `json:"sign" mapstructure:"sign"`       //签名，参照验签规范
-}
-
-// ----------withdraw confirm-------------------------
-
-// callback以后,还要单独发个请求再来查询下.
-type CoinPayWithdrawConfirmReq struct {
-	Ids string `json:"ids" mapstructure:"ids"` //确认收款订单列表接口中获取的id，用英文逗号“,”拼接起来
-	//这个是CoinPay给分配的商户id ,sdk来赋值
-	//SysNo string `json:"sys_no" mapstructure:"sys_no"` // 申请sys_no唯一标识 610001号
-}
-
-type CoinPayWithdrawConfirmResponse struct {
-	Code string `json:"code"` //
-	Msg  string `json:"msg"`
-}
-
-// =================单独请求===============================
-
-type CoinPayOrderListRsp struct {
-	Code   string                 `json:"code"` //
-	Msg    string                 `json:"msg"`
-	Result CoinPayOrderPageResult `json:"result"`
-}
-
-type CoinPayOrderPageResult struct {
-	TotalCount string              `json:"totalCount"` // 总记录数
-	TotalPage  int64               `json:"totalPage"`  // 总页数
-	Page       int64               `json:"page"`       // 当前页码
-	Data       []*CoinPayOrderData `json:"data"`       // 订单数据列表
-}
-
-type CoinPayOrderData struct {
-	ID                       string `json:"id"`
-	SysSerialNo              string `json:"sysSerialNo"`
-	Amount                   string `json:"amount"`
-	PayType                  string `json:"payType"`
-	UserName                 string `json:"userName"`
-	BankCardNo               string `json:"bankCardNo"`
-	BankAddress              string `json:"bankAddress"`
-	ChangeRate               string `json:"changeRate"`
-	HandlingFee              string `json:"handlingFee"`
-	MerchantSettleUSDTNumber string `json:"merchantSettleUSDTNumber"`
-	SerialNo                 string `json:"serialNo"`
-	CreateTime               string `json:"createTime"`
-	Remark                   string `json:"remark"`
-	NumRow                   string `json:"numRow"`
-	StatusName               string `json:"statusName"`
+	// Optional fields
+	IPNUrl string `json:"ipn_url,omitempty" mapstructure:"ipn_url,omitempty"` // URL for IPN callbacks - No
+	Label  string `json:"label,omitempty" mapstructure:"label,omitempty"`     // Address label - No
+	EIP55  int    `json:"eip55,omitempty" mapstructure:"eip55,omitempty"`     // EIP-55 format flag (0/1) - No
 }

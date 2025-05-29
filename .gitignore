@@ -7,6 +7,7 @@ target/
 logs
 cmd/cmd
 resources/intl
+config.go
 
 ### STS ###
 .apt_generated

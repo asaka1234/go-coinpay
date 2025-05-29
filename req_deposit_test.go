@@ -42,9 +42,9 @@ func GenDepositRequestDemo() CoinPayDepositReq {
 
 	return CoinPayDepositReq{
 		Currency1:  "USD",
-		Currency2:  "USDT",
+		Currency2:  "LTCT",              //"USDT.TRC20",
 		BuyerEmail: "1609032335@qq.com", //outNo
-		Amount:     "1.00",
+		Amount:     "1",
 		Invoice:    "123213", //商户订单号
 		Custom:     "8907",   //uid
 	}

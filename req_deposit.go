@@ -78,5 +78,5 @@ func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, erro
 
 	return &CoinPayDepositResponse{
 		Error: result.Error,
-	}, fmt.Errorf("result is failed")
+	}, fmt.Errorf(result.Error)
 }

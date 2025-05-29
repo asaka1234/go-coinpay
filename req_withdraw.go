@@ -78,5 +78,5 @@ func (cli *Client) Withdraw(req CoinPayWithdrawalRequest) (*CoinPayWithdrawalRes
 
 	return &CoinPayWithdrawalResponse{
 		Error: result.Error,
-	}, fmt.Errorf("result is failed")
+	}, fmt.Errorf(result.Error)
 }

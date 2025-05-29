@@ -9,7 +9,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// 要前置解析好ipn类型
+// body是http-body的整体内容.
 func (cli *Client) WithdrawCallback(body string, hmacHeader string, processor func(req CoinPayWithdrawalBackReq) error) error {
 	//1. 验证签名
 	//计算HMAC签名

@@ -1,27 +1,44 @@
 package go_coinpay
 
 import (
+	"crypto/hmac"
+	"crypto/sha512"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/asaka1234/go-coinpay/utils"
+	goquery "github.com/google/go-querystring/query"
 	"github.com/mitchellh/mapstructure"
-	"time"
+	"log"
+	"strings"
 )
 
 // https://www.coinpayments.net/apidoc-create-transaction
 func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, error) {
 
-	rawURL := cli.DepositURL
+	rawURL := cli.EndPoint
 
-	var params map[string]interface{}
-	mapstructure.Decode(req, &params)
-	params["sys_no"] = cli.MerchantID
-	params["order_time"] = time.Now().Format("2006-01-02 15:04:05")
+	//构造请求body
+	bodyForm, err := goquery.Values(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+	//添加公共参数
+	bodyForm.Add("key", cli.PublicKey)
+	bodyForm.Add("version", "1") //FIXED
+	bodyForm.Add("cmd", "create_transaction")
+	bodyForm.Add("format", "json") //FIXED
+	bodyForm.Add("ipn_url", cli.DepositBackUrl)
 
-	//签名
-	signStr := utils.SignDeposit(params, cli.AccessKey)
-	params["sign"] = signStr
+	//计算sign (要放在Head里)
+	payload := bodyForm.Encode()
+
+	fmt.Printf("===>payload:%s\n", payload)
+
+	mac := hmac.New(sha512.New, []byte(cli.PrivateKey))
+	mac.Write([]byte(payload))
+	hmac := fmt.Sprintf("%x", mac.Sum(nil))
+
+	fmt.Printf("===>sign:%s\n", hmac)
 
 	//返回值会放到这里
 	var result CoinPayDepositCommonResponse
@@ -29,8 +46,8 @@ func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, erro
 	resp2, err := cli.ryClient.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
 		SetCloseConnection(true).
 		R().
-		SetHeaders(getHeaders()).
-		SetMultipartFormData(utils.ConvertToStringMap(params)).
+		SetHeaders(getHeaders(hmac)).
+		SetFormDataFromValues(bodyForm).
 		SetResult(&result).
 		Post(rawURL)
 
@@ -38,9 +55,11 @@ func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, erro
 		return nil, err
 	}
 
-	//------------------------------------------------------
-	if result.Code == 111 && result.Status == "success" {
-		//说明成功
+	responseStr := string(resp2.Body())
+	log.Printf("CoinPayService#deposit#rsp: %s", responseStr)
+
+	if strings.ToLower(result.Error) == "ok" {
+		//说明成功了
 
 		//step-1
 		var data map[string]interface{}
@@ -58,8 +77,6 @@ func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, erro
 	}
 
 	return &CoinPayDepositResponse{
-		Code:   result.Code,
-		Status: result.Status,
-		Msg:    result.Msg,
+		Error: result.Error,
 	}, fmt.Errorf("result is failed")
 }

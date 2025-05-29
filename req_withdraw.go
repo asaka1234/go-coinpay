@@ -1,36 +1,53 @@
 package go_coinpay
 
 import (
+	"crypto/hmac"
+	"crypto/sha512"
 	"crypto/tls"
 	"encoding/json"
-	"github.com/asaka1234/go-coinpay/utils"
+	"fmt"
+	goquery "github.com/google/go-querystring/query"
+	"github.com/mitchellh/mapstructure"
+	"log"
+	"strings"
 )
 
 // withdraw
-func (cli *Client) Withdraw(req CoinPayWithdrawReq) (*CoinPayWithdrawResponse, error) {
+func (cli *Client) Withdraw(req CoinPayWithdrawalRequest) (*CoinPayWithdrawalResponse, error) {
 
-	rawURL := cli.WithdrawURL
+	rawURL := cli.EndPoint
 
-	jsonData, err := json.Marshal(req.Data)
+	//构造请求body
+	bodyForm, err := goquery.Values(req)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
-	params := make(map[string]interface{})
-	params["data"] = string(jsonData)
-	params["sys_no"] = cli.MerchantID
+	//添加公共参数
+	bodyForm.Add("key", cli.PublicKey)
+	bodyForm.Add("version", "1") //FIXED
+	bodyForm.Add("cmd", "create_withdrawal")
+	bodyForm.Add("format", "json") //FIXED
+	bodyForm.Add("ipn_url", cli.WithdrawBackUrl)
 
-	//签名
-	signStr := utils.SignWithdraw(params, cli.AccessKey)
-	params["sign"] = signStr
+	//计算sign (要放在Head里)
+	payload := bodyForm.Encode()
+
+	fmt.Printf("===>payload:%s\n", payload)
+
+	mac := hmac.New(sha512.New, []byte(cli.PrivateKey))
+	mac.Write([]byte(payload))
+	hmac := fmt.Sprintf("%x", mac.Sum(nil))
+
+	fmt.Printf("===>sign:%s\n", hmac)
 
 	//返回值会放到这里
-	var result CoinPayWithdrawResponse
+	var result CoinPayWithdrawalCommonResponse
 
-	_, err = cli.ryClient.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
+	resp2, err := cli.ryClient.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
 		SetCloseConnection(true).
 		R().
-		SetHeaders(getHeaders()).
-		SetMultipartFormData(utils.ConvertToStringMap(params)).
+		SetHeaders(getHeaders(hmac)).
+		SetFormDataFromValues(bodyForm).
 		SetResult(&result).
 		Post(rawURL)
 
@@ -38,5 +55,28 @@ func (cli *Client) Withdraw(req CoinPayWithdrawReq) (*CoinPayWithdrawResponse, e
 		return nil, err
 	}
 
-	return &result, err
+	responseStr := string(resp2.Body())
+	log.Printf("CoinPayService#deposit#rsp: %s", responseStr)
+
+	if strings.ToLower(result.Error) == "ok" {
+		//说明成功了
+
+		//step-1
+		var data map[string]interface{}
+		if err := json.Unmarshal(resp2.Body(), &data); err != nil {
+			return nil, err
+		}
+
+		//step-2
+		var resp3 CoinPayWithdrawalResponse
+		if err := mapstructure.Decode(data, &resp3); err != nil {
+			return nil, err
+		}
+
+		return &resp3, nil
+	}
+
+	return &CoinPayWithdrawalResponse{
+		Error: result.Error,
+	}, fmt.Errorf("result is failed")
 }

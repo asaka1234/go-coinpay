@@ -4,23 +4,21 @@ package go_coinpay
 
 // https://www.coinpayments.net/apidoc-create-transaction
 type CoinPayDepositReq struct {
-	// Required fields
-	Cmd        string `json:"cmd" mapstructure:"cmd"`                 // create_transaction - Yes
-	Amount     string `json:"amount" mapstructure:"amount"`           // The amount of the payment in the original currency - Yes
-	Currency1  string `json:"currency1" mapstructure:"currency1"`     // The original currency of the payment - Yes
-	Currency2  string `json:"currency2" mapstructure:"currency2"`     // The currency the buyer will be sending - Yes
-	BuyerEmail string `json:"buyer_email" mapstructure:"buyer_email"` // Buyer's email address - Yes
+	//比如我们想让用户充usd, 但是希望收到的是btc.  则currency1=USD, currency2=BTC
 
-	// Optional fields
-	Address    string `json:"address,omitempty" mapstructure:"address,omitempty"`         // Address to send the funds to - No
-	BuyerName  string `json:"buyer_name,omitempty" mapstructure:"buyer_name,omitempty"`   // Buyer's name for reference - No
-	ItemName   string `json:"item_name,omitempty" mapstructure:"item_name,omitempty"`     // Item name for reference - No
-	ItemNumber string `json:"item_number,omitempty" mapstructure:"item_number,omitempty"` // Item number for reference - No
-	Invoice    string `json:"invoice,omitempty" mapstructure:"invoice,omitempty"`         // Custom field for your use - No
-	Custom     string `json:"custom,omitempty" mapstructure:"custom,omitempty"`           // Custom field for your use - No
-	IPNUrl     string `json:"ipn_url,omitempty" mapstructure:"ipn_url,omitempty"`         // URL for IPN callbacks - No
-	SuccessUrl string `json:"success_url,omitempty" mapstructure:"success_url,omitempty"` // URL for successful payment - No
-	CancelUrl  string `json:"cancel_url,omitempty" mapstructure:"cancel_url,omitempty"`   // URL for cancelled payment - No
+	// Required fields
+	Amount     string `json:"amount" mapstructure:"amount" url:"amount"`                        // The amount of the payment in the original currency - Yes
+	Currency1  string `json:"currency1" mapstructure:"currency1" url:"currency1"`               // The original currency of the payment.
+	Currency2  string `json:"currency2" mapstructure:"currency2" url:"currency2"`               // The currency the buyer will be sending - Yes
+	BuyerEmail string `json:"buyer_email" mapstructure:"buyer_email" url:"buyer_email"`         // Buyer's email address - Yes
+	Invoice    string `json:"invoice,omitempty" mapstructure:"invoice,omitempty" url:"invoice"` //option, 商户订单号
+	Custom     string `json:"custom,omitempty" mapstructure:"custom,omitempty" url:"custom"`    //option, 商户的userId
+	//sdk设置
+	//IPNUrl     string `json:"ipn_url,omitempty" mapstructure:"ipn_url,omitempty" url:"ipn_url"`             // 实际回调地址（ajax）
+}
+
+type CoinPayDepositCommonResponse struct {
+	Error string `json:"error" mapstructure:"error"`
 }
 
 type CoinPayDepositResponse struct {
@@ -40,17 +38,66 @@ type CoinPaymentDepositResult struct {
 	QRCodeURL      string `json:"qrcode_url" mapstructure:"qrcode_url"`
 }
 
-//===========callback===================================
+type CoinPayCommonBackReq struct {
+	IpnType string `json:"ipn_type" mapstructure:"ipn_type"` //消息类型，api是充值,withdrawal是提现
+}
 
-// https://www.coinpayments.net/apidoc-get-callback-address
-
+// https://www.coinpayments.net/merchant-tools-ipn
 type CoinPayDepositBackReq struct {
-	// Required fields
-	Cmd      string `json:"cmd" mapstructure:"cmd"`           // get_callback_address - Yes
-	Currency string `json:"currency" mapstructure:"currency"` // The currency the buyer will be sending - Yes
+	IpnType    string `json:"ipn_type" mapstructure:"ipn_type"`                                 //消息类型，写死:api
+	Status     string `json:"status" mapstructure:"status"`                                     //支付状态,>=100就是成功!!! 0-pending, 100-confirm/complete
+	StatusText string `json:"status_text" mapstructure:"status_text"`                           //支付状态的描述
+	TxnID      string `json:"txn_id" mapstructure:"txn_id"`                                     //txId
+	Currency1  string `json:"currency1" mapstructure:"currency1"`                               //支付的货币
+	Currency2  string `json:"currency2" mapstructure:"currency2"`                               //支付的货币
+	Amount1    string `json:"amount1" mapstructure:"amount1"`                                   //总量
+	Amount2    string `json:"amount2" mapstructure:"amount2"`                                   // amount in satoshis
+	Fee        string `json:"fee" mapstructure:"fee"`                                           //The fee on the payment in the buyer's selected coin.
+	Invoice    string `json:"invoice,omitempty" mapstructure:"invoice,omitempty" url:"invoice"` //option, 商户订单号
+	Custom     string `json:"custom,omitempty" mapstructure:"custom,omitempty" url:"custom"`    //option, 商户的userId
 
-	// Optional fields
-	IPNUrl string `json:"ipn_url,omitempty" mapstructure:"ipn_url,omitempty"` // URL for IPN callbacks - No
-	Label  string `json:"label,omitempty" mapstructure:"label,omitempty"`     // Address label - No
-	EIP55  int    `json:"eip55,omitempty" mapstructure:"eip55,omitempty"`     // EIP-55 format flag (0/1) - No
+}
+
+//===========withdraw===================================
+
+type CoinPayWithdrawalRequest struct {
+	Amount   string `json:"amount" mapstructure:"amount"`
+	Currency string `json:"currency" mapstructure:"currency"` //The cryptocurrency to withdraw. (BTC, LTC, etc.)
+	//Currency2   string `json:"currency2" mapstructure:"currency2"` //The cryptocurrency to withdraw. (BTC, LTC, etc.)
+	Address string `json:"address" mapstructure:"address"` //提现地址
+	//sdk设置
+	//IPNUrl     string `json:"ipn_url,omitempty" mapstructure:"ipn_url,omitempty" url:"ipn_url"`             // 实际回调地址（ajax）
+	AutoConfirm int `json:"auto_confirm" mapstructure:"auto_confirm"` //设置为1, If set to 1, withdrawal will complete without email confirmation.
+
+	Note string `json:"note,omitempty" mapstructure:"note"` //里边放:商户的订单号
+}
+
+type CoinPayWithdrawalCommonResponse struct {
+	Error string `json:"error" mapstructure:"error"`
+}
+
+// WithdrawalResponse is the response we expect from the API server.
+type CoinPayWithdrawalResponse struct {
+	Error  string                   `json:"error" mapstructure:"error"`
+	Result *CoinPayWithdrawalResult `json:"result" mapstructure:"result"`
+}
+
+type CoinPayWithdrawalResult struct {
+	Amount string `json:"amount" mapstructure:"amount"`
+	ID     string `json:"id" mapstructure:"id"`         //这个是psp的订单号.
+	Status int    `json:"status" mapstructure:"status"` // 0 or 1. 0 = transfer created, waiting for email conf. 1 = transfer created with no email conf.
+}
+
+// https://www.coinpayments.net/merchant-tools-ipn
+type CoinPayWithdrawalBackReq struct {
+	IpnType    string `json:"ipn_type" mapstructure:"ipn_type"` //消息类型，写死:withdrawal
+	ID         string `json:"id" mapstructure:"id"`             //这个是psp的订单号
+	Status     int    `json:"status" mapstructure:"status"`     //状态, 枚举:<0 = failed, 0 = waiting email confirmation, 1 = pending, and 2 = sent/complete.
+	StatusText string `json:"status_text" mapstructure:"status_text"`
+	Address    string `json:"address" mapstructure:"address"`         //提现地址
+	TxnID      string `json:"txn_id,omitempty" mapstructure:"txn_id"` //txID
+	Currency   string `json:"currency" mapstructure:"currency"`
+	Amount     string `json:"amount" mapstructure:"amount"`
+	Amounti    string `json:"amounti" mapstructure:"amounti"`     //The total amount of the withdrawal in Satoshis
+	Note       string `json:"note,omitempty" mapstructure:"note"` //里边登记放:商户的订单号
 }

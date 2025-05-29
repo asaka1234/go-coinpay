@@ -1,6 +1,9 @@
-整体流程
+文档
 ==============
 https://www.coinpayments.net/apidoc-create-transaction
+
+流程
+===============
 
 
 

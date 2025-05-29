@@ -1,17 +1,14 @@
 package go_coinpay
 
 const (
-	MERCHANT_ID = "502326"                               //商户号
-	ACCESS_KEY  = "2299de9c55458f1d48611cdd9073aa7c"     //调用psp的签名key
-	BACK_KEY    = "5E1572C3-0274-A6C7-E797-6E3111CCDC71" //回调的签名key
+	MerchantID = "1234"
+	PrivateKey = "003aecd0d464701cc4300e35dca7b456f14ec7552965ce5f22c7b14d4ec36fb6"
+	PublicKey  = "7BeEBa008cC8FAc46fbD3c482dfD3aAad908B361b34510306f6f0cB074B0b50F"
 
-	//deposit
-	DEPOSIT_URL = "https://swpapi.fastgo788.io/UtInRecordApi/orderGateWay"
+	IPNSecret = "haihaihaihi"
 
-	//withdraw
-	WITHDRAW_URL         = "https://mmapi.qhcm12.com/AjaxOpen/saveOutOrder"
-	WITHDRAW_CONFIRM_URL = "https://mmapi.proxima131.com/AjaxOpen/appealOutOrder"
+	EndPoint = "https://www.coinpayments.net/api.php" //所有请求都是到这里,通过参数区分
 
-	//orderlist
-	ORDERLIST_URL = "https://mmapi.proxima131.com/AjaxOpen/getOutOrderList"
+	DepositBackUrl  = "http://127.0.0.1" //回调地址
+	WithdrawBackUrl = "http://127.0.0.1" //回调地址
 )

@@ -7,28 +7,28 @@ import (
 
 type Client struct {
 	MerchantID string
-	AccessKey  string
-	BackKey    string
+	PrivateKey string
+	PublicKey  string
+	IPNSecret  string
 
-	DepositURL         string
-	WithdrawURL        string
-	WithdrawConfirmURL string
-	OrderListURL       string
+	EndPoint        string //所有请求都是到这里,通过参数区分
+	DepositBackUrl  string //回调地址
+	WithdrawBackUrl string //回调地址
 
 	ryClient *resty.Client
 	logger   utils.Logger
 }
 
-func NewClient(logger utils.Logger, merchantId string, accessKey string, backKey string, depositURL string, withdrawURL, withdrawConfirmURL, orderListURL string) *Client {
+func NewClient(logger utils.Logger, merchantId string, privateKey string, publicKey, ipnSecret string, endPoint string, depositBackUrl, withdrawBackUrl string) *Client {
 	return &Client{
 		MerchantID: merchantId,
-		AccessKey:  accessKey,
-		BackKey:    backKey,
+		PrivateKey: privateKey,
+		PublicKey:  publicKey,
+		IPNSecret:  ipnSecret,
 
-		DepositURL:         depositURL,
-		WithdrawURL:        withdrawURL,
-		WithdrawConfirmURL: withdrawConfirmURL,
-		OrderListURL:       orderListURL,
+		EndPoint:        endPoint,
+		DepositBackUrl:  depositBackUrl,
+		WithdrawBackUrl: withdrawBackUrl,
 
 		ryClient: resty.New(), //client实例
 		logger:   logger,

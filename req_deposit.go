@@ -15,7 +15,7 @@ import (
 // https://www.coinpayments.net/apidoc-create-transaction
 func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, error) {
 
-	rawURL := cli.EndPoint
+	rawURL := cli.Params.EndPoint
 
 	//构造请求body
 	bodyForm, err := goquery.Values(req)
@@ -23,18 +23,18 @@ func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, erro
 		log.Fatal(err)
 	}
 	//添加公共参数
-	bodyForm.Add("key", cli.PublicKey)
+	bodyForm.Add("key", cli.Params.PublicKey)
 	bodyForm.Add("version", "1") //FIXED
 	bodyForm.Add("cmd", "create_transaction")
 	bodyForm.Add("format", "json") //FIXED
-	bodyForm.Add("ipn_url", cli.DepositBackUrl)
+	bodyForm.Add("ipn_url", cli.Params.DepositBackUrl)
 
 	//计算sign (要放在Head里)
 	payload := bodyForm.Encode()
 
 	fmt.Printf("===>payload:%s\n", payload)
 
-	mac := hmac.New(sha512.New, []byte(cli.PrivateKey))
+	mac := hmac.New(sha512.New, []byte(cli.Params.PrivateKey))
 	mac.Write([]byte(payload))
 	hmac := fmt.Sprintf("%x", mac.Sum(nil))
 

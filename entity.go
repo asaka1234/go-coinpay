@@ -1,5 +1,16 @@
 package go_coinpay
 
+type CoinPayInitParams struct {
+	MerchantId string `json:"merchantId" mapstructure:"amount" url:"merchantId"`
+	PrivateKey string `json:"privateKey" mapstructure:"privateKey" url:"privateKey"`
+	PublicKey  string `json:"publicKey" mapstructure:"publicKey" url:"publicKey"`
+	IPNSecret  string `json:"ipnSecret" mapstructure:"ipnSecret" url:"ipnSecret"`
+
+	EndPoint        string `json:"endPoint" mapstructure:"endPoint" url:"endPoint"`                      //所有请求都是到这里,通过参数区分
+	DepositBackUrl  string `json:"depositBackUrl" mapstructure:"depositBackUrl" url:"depositBackUrl"`    //回调地址
+	WithdrawBackUrl string `json:"withdrawBackUrl" mapstructure:"withdrawBackUrl" url:"withdrawBackUrl"` //回调地址
+}
+
 // ----------pre order-------------------------
 
 // https://www.coinpayments.net/apidoc-create-transaction

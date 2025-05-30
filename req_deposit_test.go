@@ -27,7 +27,7 @@ func TestDeposit(t *testing.T) {
 
 	vLog := VLog{}
 	//构造client
-	cli := NewClient(vLog, MerchantID, PrivateKey, PublicKey, IPNSecret, EndPoint, DepositBackUrl, WithdrawBackUrl)
+	cli := NewClient(vLog, CoinPayInitParams{MerchantID, PrivateKey, PublicKey, IPNSecret, EndPoint, DepositBackUrl, WithdrawBackUrl})
 
 	//发请求
 	resp, err := cli.Deposit(GenDepositRequestDemo())

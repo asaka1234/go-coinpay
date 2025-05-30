@@ -13,7 +13,7 @@ import (
 func (cli *Client) WithdrawCallback(body string, hmacHeader string, processor func(req CoinPayWithdrawalBackReq) error) error {
 	//1. 验证签名
 	//计算HMAC签名
-	mac := hmac.New(sha512.New, []byte(cli.IPNSecret))
+	mac := hmac.New(sha512.New, []byte(cli.Params.IPNSecret))
 	mac.Write([]byte(body))
 	expectedMAC := hex.EncodeToString(mac.Sum(nil))
 

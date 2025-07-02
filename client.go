@@ -6,13 +6,13 @@ import (
 )
 
 type Client struct {
-	Params CoinPayInitParams
+	Params *CoinPayInitParams
 
 	ryClient *resty.Client
 	logger   utils.Logger
 }
 
-func NewClient(logger utils.Logger, params CoinPayInitParams) *Client {
+func NewClient(logger utils.Logger, params *CoinPayInitParams) *Client {
 	return &Client{
 		Params: params,
 		

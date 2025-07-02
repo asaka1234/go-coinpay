@@ -55,6 +55,16 @@ func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, erro
 		return nil, err
 	}
 
+	if resp2.StatusCode() != 200 {
+		//反序列化错误会在此捕捉
+		return nil, fmt.Errorf("status code: %d", resp2.StatusCode())
+	}
+
+	if resp2.Error() != nil {
+		//反序列化错误会在此捕捉
+		return nil, fmt.Errorf("%v, body:%s", resp2.Error(), resp2.Body())
+	}
+	
 	responseStr := string(resp2.Body())
 	log.Printf("CoinPayService#deposit#rsp: %s", responseStr)
 

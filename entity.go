@@ -1,7 +1,7 @@
 package go_coinpay
 
 type CoinPayInitParams struct {
-	MerchantId string `json:"merchantId" mapstructure:"amount" url:"merchantId"`
+	MerchantId string `json:"merchantId" mapstructure:"merchantId" url:"merchantId"`
 	PrivateKey string `json:"privateKey" mapstructure:"privateKey" url:"privateKey"`
 	PublicKey  string `json:"publicKey" mapstructure:"publicKey" url:"publicKey"`
 	IPNSecret  string `json:"ipnSecret" mapstructure:"ipnSecret" url:"ipnSecret"`

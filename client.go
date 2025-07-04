@@ -10,6 +10,7 @@ type Client struct {
 
 	ryClient *resty.Client
 	logger   utils.Logger
+	debugMode bool
 }
 
 func NewClient(logger utils.Logger, params *CoinPayInitParams) *Client {
@@ -18,5 +19,10 @@ func NewClient(logger utils.Logger, params *CoinPayInitParams) *Client {
 		
 		ryClient: resty.New(), //client实例
 		logger:   logger,
+		debugMode: false,
 	}
+}
+
+func (cli *Client) SetDebugModel(debugMode bool) {
+	cli.debugMode = debugMode
 }

@@ -34,8 +34,7 @@ func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, erro
 
 	fmt.Printf("===>payload:%s\n", payload)
 
-	// mac := hmac.New(sha512.New, []byte(cli.Params.PrivateKey))
-	mac := hmac.New(sha512.New, []byte(cli.Params.IPNSecret))
+        mac := hmac.New(sha512.New, []byte(cli.Params.PrivateKey))
 	mac.Write([]byte(payload))
 	hmac := fmt.Sprintf("%x", mac.Sum(nil))
 

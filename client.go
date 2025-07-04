@@ -7,7 +7,6 @@ import (
 
 type Client struct {
 	Params *CoinPayInitParams
-
 	ryClient *resty.Client
 	logger   utils.Logger
 	debugMode bool
@@ -15,8 +14,7 @@ type Client struct {
 
 func NewClient(logger utils.Logger, params *CoinPayInitParams) *Client {
 	return &Client{
-		Params: params,
-		
+		Params: params,	
 		ryClient: resty.New(), //client实例
 		logger:   logger,
 		debugMode: false,

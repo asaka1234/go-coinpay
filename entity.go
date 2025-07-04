@@ -50,22 +50,22 @@ type CoinPaymentDepositResult struct {
 }
 
 type CoinPayCommonBackReq struct {
-	IpnType string `json:"ipn_type" mapstructure:"ipn_type"` //消息类型，api是充值,withdrawal是提现
+	IpnType string `form:"ipn_type" json:"ipn_type" mapstructure:"ipn_type"` //消息类型，api是充值,withdrawal是提现
 }
 
 // https://www.coinpayments.net/merchant-tools-ipn
 type CoinPayDepositBackReq struct {
-	IpnType    string `json:"ipn_type" mapstructure:"ipn_type"`                                 //消息类型，写死:api
-	Status     string `json:"status" mapstructure:"status"`                                     //支付状态,>=100就是成功!!! 0-pending, 100-confirm/complete
-	StatusText string `json:"status_text" mapstructure:"status_text"`                           //支付状态的描述
-	TxnID      string `json:"txn_id" mapstructure:"txn_id"`                                     //txId
-	Currency1  string `json:"currency1" mapstructure:"currency1"`                               //支付的货币
-	Currency2  string `json:"currency2" mapstructure:"currency2"`                               //支付的货币
-	Amount1    string `json:"amount1" mapstructure:"amount1"`                                   //总量
-	Amount2    string `json:"amount2" mapstructure:"amount2"`                                   // amount in satoshis
-	Fee        string `json:"fee" mapstructure:"fee"`                                           //The fee on the payment in the buyer's selected coin.
-	Invoice    string `json:"invoice,omitempty" mapstructure:"invoice,omitempty" url:"invoice"` //option, 商户订单号
-	Custom     string `json:"custom,omitempty" mapstructure:"custom,omitempty" url:"custom"`    //option, 商户的userId
+	IpnType    string `form:"ipn_type" json:"ipn_type" mapstructure:"ipn_type"`                                 //消息类型，写死:api
+	Status     string `form:"status" json:"status" mapstructure:"status"`                                     //支付状态,>=100就是成功!!! 0-pending, 100-confirm/complete
+	StatusText string `form:"status_text" json:"status_text" mapstructure:"status_text"`                           //支付状态的描述
+	TxnID      string `form:"txn_id" json:"txn_id" mapstructure:"txn_id"`                                     //txId
+	Currency1  string `form:"currency1" json:"currency1" mapstructure:"currency1"`                               //支付的货币
+	Currency2  string `form:"currency2" json:"currency2" mapstructure:"currency2"`                               //支付的货币
+	Amount1    string `form:"amount1" json:"amount1" mapstructure:"amount1"`                                   //总量
+	Amount2    string `form:"amount2" json:"amount2" mapstructure:"amount2"`                                   // amount in satoshis
+	Fee        string `form:"fee" json:"fee" mapstructure:"fee"`                                           //The fee on the payment in the buyer's selected coin.
+	Invoice    string `form:"invoice" json:"invoice,omitempty" mapstructure:"invoice,omitempty" url:"invoice"` //option, 商户订单号
+	Custom     string `form:"custom" json:"custom,omitempty" mapstructure:"custom,omitempty" url:"custom"`    //option, 商户的userId
 
 }
 
@@ -101,14 +101,14 @@ type CoinPayWithdrawalResult struct {
 
 // https://www.coinpayments.net/merchant-tools-ipn
 type CoinPayWithdrawalBackReq struct {
-	IpnType    string `json:"ipn_type" mapstructure:"ipn_type"` //消息类型，写死:withdrawal
-	ID         string `json:"id" mapstructure:"id"`             //这个是psp的订单号
-	Status     int    `json:"status" mapstructure:"status"`     //状态, 枚举:<0 = failed, 0 = waiting email confirmation, 1 = pending, and 2 = sent/complete.
-	StatusText string `json:"status_text" mapstructure:"status_text"`
-	Address    string `json:"address" mapstructure:"address"`         //提现地址
-	TxnID      string `json:"txn_id,omitempty" mapstructure:"txn_id"` //txID
-	Currency   string `json:"currency" mapstructure:"currency"`
-	Amount     string `json:"amount" mapstructure:"amount"`
-	Amounti    string `json:"amounti" mapstructure:"amounti"`     //The total amount of the withdrawal in Satoshis
-	Note       string `json:"note,omitempty" mapstructure:"note"` //里边登记放:商户的订单号
+	IpnType    string `form:"ipn_type" json:"ipn_type" mapstructure:"ipn_type"` //消息类型，写死:withdrawal
+	ID         string `form:"id" json:"id" mapstructure:"id"`             //这个是psp的订单号
+	Status     int    `form:"status" json:"status" mapstructure:"status"`     //状态, 枚举:<0 = failed, 0 = waiting email confirmation, 1 = pending, and 2 = sent/complete.
+	StatusText string `form:"status_text" json:"status_text" mapstructure:"status_text"`
+	Address    string `form:"address" json:"address" mapstructure:"address"`         //提现地址
+	TxnID      string `form:"txn_id" json:"txn_id,omitempty" mapstructure:"txn_id"` //txID
+	Currency   string `form:"currency" json:"currency" mapstructure:"currency"`
+	Amount     string `form:"amount" json:"amount" mapstructure:"amount"`
+	Amounti    string `form:"amounti" json:"amounti" mapstructure:"amounti"`     //The total amount of the withdrawal in Satoshis
+	Note       string `form:"note" json:"note,omitempty" mapstructure:"note"` //里边登记放:商户的订单号
 }

@@ -48,7 +48,6 @@ func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, erro
 		R().
 		SetHeaders(getHeaders(hmac)).
 	        SetDebug(cli.debugMode).
-	        SetLogger(cli.logger).
 		SetFormDataFromValues(bodyForm).
 		SetResult(&result).
 		Post(rawURL)

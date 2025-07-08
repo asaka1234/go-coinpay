@@ -72,15 +72,15 @@ type CoinPayDepositBackReq struct {
 //===========withdraw===================================
 
 type CoinPayWithdrawalRequest struct {
-	Amount   string `json:"amount" mapstructure:"amount"`
-	Currency string `json:"currency" mapstructure:"currency"` //The cryptocurrency to withdraw. (BTC, LTC, etc.)
-	//Currency2   string `json:"currency2" mapstructure:"currency2"` //The cryptocurrency to withdraw. (BTC, LTC, etc.)
-	Address string `json:"address" mapstructure:"address"` //提现地址
+	Amount   string `json:"amount" mapstructure:"amount" url:"amount"`
+	Currency string `json:"currency" mapstructure:"currency" url:"currency"` //The cryptocurrency to withdraw. (BTC, LTC, etc.)
+	//Currency2   string `json:"currency2" mapstructure:"currency2" url:"currency2"` //The cryptocurrency to withdraw. (BTC, LTC, etc.)
+	Address string `json:"address" mapstructure:"address" url:"address"` //提现地址
 	//sdk设置
 	//IPNUrl     string `json:"ipn_url,omitempty" mapstructure:"ipn_url,omitempty" url:"ipn_url"`             // 实际回调地址（ajax）
-	AutoConfirm int `json:"auto_confirm" mapstructure:"auto_confirm"` //设置为1, If set to 1, withdrawal will complete without email confirmation.
+	AutoConfirm int `json:"auto_confirm" mapstructure:"auto_confirm" url:"auto_confirm"` //设置为1, If set to 1, withdrawal will complete without email confirmation.
 
-	Note string `json:"note,omitempty" mapstructure:"note"` //里边放:商户的订单号
+	Note string `json:"note,omitempty" mapstructure:"note" url:"note"` //里边放:商户的订单号
 }
 
 type CoinPayWithdrawalCommonResponse struct {

@@ -5,6 +5,7 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 	"fmt"
+	"strings"
 )
 
 // body是http-body的整体内容.
@@ -15,8 +16,8 @@ func (cli *Client) DepositCallback(body string, hmacHeader string, req CoinPayDe
 	mac.Write([]byte(body))
 	expectedMAC := hex.EncodeToString(mac.Sum(nil))
 
-	//验证签名
-	if !hmac.Equal([]byte(expectedMAC), []byte(hmacHeader)) {
+	if strings.ToUpper(expectedMAC) != strings.ToUpper(hmacHeader) {
+		//验证签名
 		return fmt.Errorf("HMAC signature does not match")
 	}
 

@@ -18,7 +18,7 @@ func (cli *Client) DepositCallback(body string, hmacHeader string, req CoinPayDe
 
 	if strings.ToUpper(expectedMAC) != strings.ToUpper(hmacHeader) {
 		//验证签名
-		return fmt.Errorf("HMAC signature does not match")
+		return fmt.Errorf("HMAC signature does not match, header:%s, expect:%s", hmacHeader, expectedMAC)
 	}
 
 	//开始处理

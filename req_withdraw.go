@@ -28,6 +28,8 @@ func (cli *Client) Withdraw(req CoinPayWithdrawalRequest) (*CoinPayWithdrawalRes
 	bodyForm.Add("cmd", "create_withdrawal")
 	bodyForm.Add("format", "json") //FIXED
 	bodyForm.Add("ipn_url", cli.Params.WithdrawBackUrl)
+	bodyForm.Add("success_url", cli.Params.DepositFeBackUrl)
+	bodyForm.Add("cancel_url", cli.Params.DepositFeBackUrl)
 
 	//计算sign (要放在Head里)
 	payload := bodyForm.Encode()
@@ -47,7 +49,7 @@ func (cli *Client) Withdraw(req CoinPayWithdrawalRequest) (*CoinPayWithdrawalRes
 		SetCloseConnection(true).
 		R().
 		SetHeaders(getHeaders(hmac)).
-	        SetDebug(cli.debugMode).
+		SetDebug(cli.debugMode).
 		SetFormDataFromValues(bodyForm).
 		SetResult(&result).
 		Post(rawURL)
@@ -79,5 +81,5 @@ func (cli *Client) Withdraw(req CoinPayWithdrawalRequest) (*CoinPayWithdrawalRes
 
 	return &CoinPayWithdrawalResponse{
 		Error: result.Error,
-	}, fmt.Errorf(result.Error)
+	}, fmt.Errorf("%s", result.Error)
 }

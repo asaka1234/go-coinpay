@@ -28,13 +28,15 @@ func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, erro
 	bodyForm.Add("cmd", "create_transaction")
 	bodyForm.Add("format", "json") //FIXED
 	bodyForm.Add("ipn_url", cli.Params.DepositBackUrl)
+	bodyForm.Add("success_url", cli.Params.DepositFeBackUrl)
+	bodyForm.Add("cancel_url", cli.Params.DepositFeBackUrl)
 
 	//计算sign (要放在Head里)
 	payload := bodyForm.Encode()
 
 	fmt.Printf("===>payload:%s\n", payload)
 
-        mac := hmac.New(sha512.New, []byte(cli.Params.PrivateKey))  //
+	mac := hmac.New(sha512.New, []byte(cli.Params.PrivateKey)) //
 	mac.Write([]byte(payload))
 	hmac := fmt.Sprintf("%x", mac.Sum(nil))
 
@@ -47,7 +49,7 @@ func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, erro
 		SetCloseConnection(true).
 		R().
 		SetHeaders(getHeaders(hmac)).
-	        SetDebug(cli.debugMode).
+		SetDebug(cli.debugMode).
 		SetFormDataFromValues(bodyForm).
 		SetResult(&result).
 		Post(rawURL)
@@ -65,7 +67,7 @@ func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, erro
 		//反序列化错误会在此捕捉
 		return nil, fmt.Errorf("%v, body:%s", resp2.Error(), resp2.Body())
 	}
-	
+
 	responseStr := string(resp2.Body())
 	log.Printf("CoinPayService#deposit#rsp: %s", responseStr)
 
@@ -89,5 +91,5 @@ func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, erro
 
 	return &CoinPayDepositResponse{
 		Error: result.Error,
-	}, fmt.Errorf(result.Error)
+	}, fmt.Errorf("%s", result.Error)
 }

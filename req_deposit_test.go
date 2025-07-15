@@ -27,7 +27,7 @@ func TestDeposit(t *testing.T) {
 
 	vLog := VLog{}
 	//构造client
-	cli := NewClient(vLog, CoinPayInitParams{MerchantID, PrivateKey, PublicKey, IPNSecret, EndPoint, DepositBackUrl, WithdrawBackUrl})
+	cli := NewClient(vLog, &CoinPayInitParams{MerchantID, PrivateKey, PublicKey, IPNSecret, EndPoint, DepositBackUrl, WithdrawBackUrl, DepositFeBackUrl})
 
 	//发请求
 	resp, err := cli.Deposit(GenDepositRequestDemo())
@@ -42,10 +42,10 @@ func GenDepositRequestDemo() CoinPayDepositReq {
 
 	return CoinPayDepositReq{
 		Currency1:  "USD",
-		Currency2:  "LTCT",              //"USDT.TRC20",
+		Currency2:  "USDT.TRC20",        //"USDT.TRC20",
 		BuyerEmail: "1609032335@qq.com", //outNo
 		Amount:     "1",
-		Invoice:    "123213", //商户订单号
-		Custom:     "8907",   //uid
+		Invoice:    "123213111", //商户订单号
+		Custom:     "89071",     //uid
 	}
 }

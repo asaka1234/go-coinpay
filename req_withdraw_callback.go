@@ -18,7 +18,7 @@ func (cli *Client) WithdrawCallback(body string, hmacHeader string, req CoinPayW
 
 	//验证签名
 	if strings.ToUpper(expectedMAC) != strings.ToUpper(hmacHeader) {
-		return fmt.Errorf("HMAC signature does not match")
+		return fmt.Errorf("HMAC signature does not match, header:%s, expect:%s", hmacHeader, expectedMAC)
 	}
 
 	//-------------------

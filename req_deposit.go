@@ -6,7 +6,9 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"github.com/asaka1234/go-coinpay/utils"
 	goquery "github.com/google/go-querystring/query"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/mitchellh/mapstructure"
 	"log"
 	"strings"
@@ -34,13 +36,9 @@ func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, erro
 	//计算sign (要放在Head里)
 	payload := bodyForm.Encode()
 
-	fmt.Printf("===>payload:%s\n", payload)
-
 	mac := hmac.New(sha512.New, []byte(cli.Params.PrivateKey)) //
 	mac.Write([]byte(payload))
 	hmac := fmt.Sprintf("%x", mac.Sum(nil))
-
-	fmt.Printf("===>sign:%s\n", hmac)
 
 	//返回值会放到这里
 	var result CoinPayDepositCommonResponse
@@ -53,6 +51,9 @@ func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, erro
 		SetFormDataFromValues(bodyForm).
 		SetResult(&result).
 		Post(rawURL)
+
+	restLog, _ := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(utils.GetRestyLog(resp2))
+	cli.logger.Infof("PSPResty#coinpay#deposit->%+v", string(restLog))
 
 	if err != nil {
 		return nil, err
@@ -67,9 +68,6 @@ func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, erro
 		//反序列化错误会在此捕捉
 		return nil, fmt.Errorf("%v, body:%s", resp2.Error(), resp2.Body())
 	}
-
-	responseStr := string(resp2.Body())
-	log.Printf("CoinPayService#deposit#rsp: %s", responseStr)
 
 	if strings.ToLower(result.Error) == "ok" {
 		//说明成功了

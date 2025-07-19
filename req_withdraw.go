@@ -69,26 +69,24 @@ func (cli *Client) Withdraw(req CoinPayWithdrawalRequest) (*CoinPayWithdrawalRes
 		return nil, fmt.Errorf("%v, body:%s", resp2.Error(), resp2.Body())
 	}
 
-	if strings.ToLower(result.Error) == "ok" {
-		//说明成功了
-
-		//step-1
-		var data map[string]interface{}
-		if err := json.Unmarshal(resp2.Body(), &data); err != nil {
-			return nil, err
-		}
-
-		//step-2
-		var resp3 CoinPayWithdrawalResponse
-		if err := mapstructure.Decode(data, &resp3); err != nil {
-			return nil, err
-		}
-
-		//resp3.error == "ok",  所以本质上就算成功了, error还是有值的
-		return &resp3, nil
+	if strings.ToLower(result.Error) != "ok" {
+		return nil, fmt.Errorf("%s", result.Error)
 	}
 
-	return &CoinPayWithdrawalResponse{
-		Error: result.Error,
-	}, fmt.Errorf("%s", result.Error)
+	//----------说明成功了-------------------
+
+	//step-1
+	var data map[string]interface{}
+	if err1 := json.Unmarshal(resp2.Body(), &data); err1 != nil {
+		return nil, err1
+	}
+
+	//step-2
+	var resp3 CoinPayWithdrawalResponse
+	if err2 := mapstructure.Decode(data, &resp3); err2 != nil {
+		return nil, err2
+	}
+
+	//resp3.error == "ok",  所以本质上就算成功了, error还是有值的
+	return &resp3, nil
 }

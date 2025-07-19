@@ -84,6 +84,7 @@ func (cli *Client) Withdraw(req CoinPayWithdrawalRequest) (*CoinPayWithdrawalRes
 			return nil, err
 		}
 
+		//resp3.error == "ok",  所以本质上就算成功了, error还是有值的
 		return &resp3, nil
 	}
 

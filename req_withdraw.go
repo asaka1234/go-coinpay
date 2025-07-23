@@ -52,7 +52,7 @@ func (cli *Client) Withdraw(req CoinPayWithdrawalRequest) (*CoinPayWithdrawalRes
 		SetResult(&result).
 		Post(rawURL)
 
-	restLog, _ := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(utils.GetRestyLog(resp2))
+	restLog, _ := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(utils.GetRestyLog(resp2, payload))
 	cli.logger.Infof("PSPResty#coinpay#withdraw->%+v", string(restLog))
 
 	if err != nil {

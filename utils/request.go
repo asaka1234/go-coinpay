@@ -28,7 +28,7 @@ type RestyLog struct {
 
 //--------------------------------------------------------
 
-func GetRestyLog(resp *resty.Response) RestyLog {
+func GetRestyLog(resp *resty.Response, payload string) RestyLog {
 	//request header
 	reqHeaders := map[string][]string(resp.Request.Header)
 	delete(reqHeaders, "User-Agent")
@@ -38,7 +38,7 @@ func GetRestyLog(resp *resty.Response) RestyLog {
 			Method:  resp.Request.Method,
 			Url:     resp.Request.URL,
 			Headers: reqHeaders, //resp.Request.Header,
-			Body:    resp.Request.Body,
+			Body:    payload,    //resp.Request.Body,
 			//"time":    resp.Request.Time,
 		},
 		Response: RestyResponse{

@@ -52,7 +52,7 @@ func (cli *Client) Deposit(req CoinPayDepositReq) (*CoinPayDepositResponse, erro
 		SetResult(&result).
 		Post(rawURL)
 
-	restLog, _ := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(utils.GetRestyLog(resp2))
+	restLog, _ := jsoniter.ConfigCompatibleWithStandardLibrary.Marshal(utils.GetRestyLog(resp2, payload))
 	cli.logger.Infof("PSPResty#coinpay#deposit->%+v", string(restLog))
 
 	if err != nil {
